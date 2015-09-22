@@ -1,0 +1,26 @@
+<div preserve-order="true" reload-on-resize masonry='{"columnWidth":50,"stamp":".stamp"}' class="items grid ">
+    <article class="item grid-item masonry-brick" ng-repeat="article in articles">
+        <div>
+            <div class="card-header">
+                <div class="author">
+                    <div class="username"> {{article.articleId}} / {{article.user.userName}}</div>
+                    <div class="publish-date">{{article.publishDate}}</div>
+                    <div>
+                        <div class="title">{{article.title}}</div>
+                    </div>
+                    <div class="card-content" style="height: 300px;overflow: hidden;">
+                        <a href="#" ng-click="open('lg', article.articleId)">
+                        <img class="content-image" ng-src="{{article.imageSummaryUrl}}">
+                        <div class="content-summary-text">{{article.contentSummary}}</div>
+                        </a>
+                    </div>
+                    <div class="card-footer">
+                        <div class="comment count">댓글수 {{article.commentCount}}</div>
+                        <div class="view count">조회수 {{article.viewCount}}</div>
+                        <div class="like count">좋와요 {{article.likeCount}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </article>
+</div>

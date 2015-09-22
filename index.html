@@ -1,0 +1,201 @@
+<!doctype html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="" ng-app="teiklr-app"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8" lang="" ng-app="teiklr-app"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9" lang="" ng-app="teiklr-app"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="" ng-app="teiklr-app"> <!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title></title>
+    <!-- 해시뱅이 없기 때문에 구글봇이 알아서 _escaped_fragment_ 파라메터를 추가해서 재요청하도록 하는 설정이다. -->
+    <base href="/">
+    <meta name="fragment" content="!">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+                    [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+            display: none !important;
+            }
+                        .grid-item { width: 340px; }
+                        .grid-item img {border-radius: 25px;}
+                        .card-content .content-image {width: 322px;}
+                        .avatar {
+                            width:40px;
+                            height:40px;
+                        }
+                        #container {
+                                margin: auto;
+                width: 1450px;
+                padding: 10px;
+                        }
+                        article {
+                                    border-radius: 3px;
+                    border-top: 1px solid #e3e3e3;
+                    border-left: 1px solid #e3e3e3;
+                    border-right: 1px solid #e3e3e3;
+                    border-bottom: 1px solid #d9d9d9;
+                    margin-top: 10px;
+                    margin-bottom:10px;
+                        }
+    </style>
+</head>
+<body ng-cloak class="ng-cloak">
+    <div id="heaer" ng-controller="HeaderController">
+        <h1>HEADER</h1>
+        <button class="btn btn-primary" type="button" ng-click="form()">FORM</button>
+    </div>
+    <div id="container" ng-view>
+    </div>
+    <div>
+        <h1>footer</h1>
+    </div>
+
+    <!-- Go to www.addthis.com/dashboard to customize your tools -->
+    <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-55da95cae8bc0680" async="async"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/masonry/3.3.1/masonry.pkgd.min.js"></script>
+    <script type="text/javascript" src="http://imagesloaded.desandro.com/imagesloaded.pkgd.min.js"></script>
+    <script type="text/javascript" src="/app/bower_components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="/app/bower_components/angular-animate/angular-animate.min.js"></script>
+    <script type="text/javascript" src="/app/bower_components/angular-aria/angular-aria.min.js"></script>
+    <script type="text/javascript" src="/app/bower_components/angular-cookies/angular-cookies.min.js"></script>
+    <script type="text/javascript" src="/app/bower_components/angular-resource/angular-resource.min.js"></script>
+    <script type="text/javascript" src="/app/bower_components/angular-route/angular-route.min.js"></script>
+    <script type="text/javascript" src="/app/bower_components/angular-masonry/angular-masonry.js"></script>
+    <script src="//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.13.3.js"></script>
+    <!--<script type="text/javascript" src="/app/bower_components/angular-bootstrap-lightbox/dist/angular-bootstrap-lightbox.js"></script>-->
+    <script src="js/vendor/bootstrap.min.js"></script>
+    <script>
+        // angular.module("teiklr-app", ['ngRoute', 'ngResource', 'wu.masonry']);
+        angular.module("teiklr-app", ['ngRoute', 'ngResource','wu.masonry', 'ui.bootstrap']);
+        // config
+        angular.module("teiklr-app").config(['$httpProvider','$locationProvider', function($httpProvider, $locationProvider) {
+            $httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
+            $locationProvider.html5Mode(true);//.hashPrefix('!');
+        }]);
+
+        angular.module("teiklr-app").config(['$routeProvider', function($routeProvider) {
+            $routeProvider
+            .when('/',
+            {
+                templateUrl: "templates/articleList.html",
+                controller: "ArticleController",
+                controllerAs: "articleController"
+            })
+            .when('/form',
+            {
+                templateUrl: "templates/articleForm.html",
+                controller: "ArticleFormController",
+                controllerAs: "articleFormController"
+            })
+            .otherwise(
+            {
+                redirectTo: "/"
+            });
+        }]);
+        angular.module("teiklr-app").controller('HeaderController', function($scope, $resource, $routeParams, $modal, $log, $location) {
+
+            $scope.form = function() {
+                $location.path("/form");
+            };
+        });
+
+        angular.module("teiklr-app").controller('ArticleFormController', function($scope, $resource, $routeParams, $modal, $log) {
+        });
+
+        angular.module("teiklr-app").controller('ArticleController', function($scope, $resource, $routeParams, $modal, $log) {
+            var data = $resource('http://10.101.10.6:7080/v1.0/?size=:size&offset=:offset', {size: '@size',offset: '@offset'});
+            // list query
+            data.get({}, function (response) {
+                $scope.articles = response.contents;
+                    $scope.first = response.first;
+                $scope.last = response.last;
+                $scope.nextOffset = response.nextOffset;
+                $scope.offset = response.offset;
+                $scope.size = response.size;
+                $scope.totalElements = response.totalElements;
+                $scope.numberOfElements = response.numberOfElements;
+                $scope.number = response.number;
+                $scope.totalPages = response.totalPages;
+                $scope.loading = false;
+            });
+            
+            $scope.addList = function() {
+                var elem = {
+                    "title":"11.TITLE",
+                    "resource":"http://dummyimage.com/230x450/",
+                    "content":"People with long hair never have limited hairstyles to try. There are tons of cute trendy hairstyles out there but a lot of them requires complicated braids, twists, knots and heating tools that may cause breakage to your hair (If styled improperly). Hence, there is a limit when it comes to non-breakage hairstyles. But don't worry"
+                };
+                $scope.articles.push(elem);
+            };
+            $scope.items = ['item1', 'item2', 'item3'];
+            $scope.animationsEnabled = true;
+            $scope.open = function (size, articleId) {
+            
+                var modalInstance = $modal.open({
+                    animation: $scope.animationsEnabled,
+                    templateUrl: 'templates/modalContent.html',
+                    controller: 'ModalInstanceCtrl',
+                    size: size,
+                    resolve: {
+                        articleId: function () {
+                            return articleId;
+                        }
+                    }
+                    // ,
+                    // resolve: {
+                                //     article: function () {
+                                            //         var data = $resource('http://10.101.10.6:7080/v1.0/article/:articleId', {articleId: '@articleId'});
+                                            //         // list query
+                                            //         return data.get({articleId:articleId}, function (response) {
+                                                        //             $scope.article = response;
+                                            //         });
+                                            //         // return $scope.article;
+                                //     }
+                    // }
+                });
+            
+                modalInstance.result.then(function (selectedItem) {
+                    $scope.selected = selectedItem;
+                    }, function () {
+                    $log.info('Modal dismissed at: ' + new Date());
+                });
+            };
+
+ 
+        });
+    // Please note that $modalInstance represents a modal window (instance) dependency.
+    // It is not the same as the $modal service used above.
+    angular.module('teiklr-app').controller('ModalInstanceCtrl', function ($scope, $http, $resource, $modalInstance, articleId) {
+        
+
+        var article = $resource('http://10.101.10.6:7080/v1.0/article/:articleId', {articleId: '@articleId'});
+        article.get({articleId:articleId}, function (response) {
+            $scope.article = response;
+        });
+        var comment = $resource('http://10.101.10.6:7080/v1.0/article/:articleId/comment', {articleId: '@articleId'});
+        comment.get({articleId:articleId}, function (response) {
+            $scope.comments = response.contents;
+            $scope.first = response.first;
+            $scope.last = response.last;
+            $scope.nextOffset = response.nextOffset;
+            $scope.offset = response.offset;
+            $scope.size = response.size;
+            $scope.totalElements = response.totalElements;
+            $scope.numberOfElements = response.numberOfElements;
+            $scope.number = response.number;
+            $scope.totalPages = response.totalPages;
+        });
+        
+        $scope.ok = function () {
+            $modalInstance.close();
+        };
+        $scope.cancel = function () {
+            $modalInstance.dismiss('cancel');
+        };
+    }); 
+    </script>
+</body>
+</html>
